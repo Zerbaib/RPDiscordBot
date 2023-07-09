@@ -197,5 +197,35 @@ async def add_job(ctx: disnake.ApplicationCommandInteraction, job: str, user: di
     )
     await channel.send(embed=embed)
 
+@bot.slash_command(
+    name="delprofile",
+    description="Supprime le profil d'un utilisateur"
+)
+@commands.has_permissions(administrator=True)
+async def del_profile(ctx: disnake.ApplicationCommandInteraction, user: disnake.User):
+    with open(data_file_path, 'r') as users_file:
+        users = json.load(users_file)
+
+    selected_user = next((s for s in users if str(s['user_id']) == str(user.id)), None)
+    if not selected_user:
+        embed = disnake.Embed(
+            title=f"Utilisateur introuvable",
+            description=f"L'utilisateur {user} n'a pas été trouvé.",
+            color=disnake.Color.dark_red()
+        )
+        await ctx.send(embed=embed)
+        return
+
+    users.remove(selected_user)
+    save_users(users)
+
+    embed = disnake.Embed(
+        title=f"Profil supprimé avec succès",
+        description=f"Le profil de {user} a été supprimé.",
+        color=disnake.Color.dark_green()
+    )
+    await ctx.send(embed=embed)
+
+
 bot.loop.create_task(status_loop())
 bot.run(token)
