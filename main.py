@@ -4,7 +4,7 @@ import os
 import json
 import asyncio
 
-data_file_path = 'data/users.json'
+data_file_path = 'users.json'
 config_file_path = 'config.json'
 config_data = {
     "TOKEN": "your_bot_token",
