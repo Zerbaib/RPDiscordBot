@@ -115,5 +115,38 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
     await channel.send(embed=embed)
     save_users(users)
 
+@bot.slash_command(
+    name="whois",
+    description="Regarde le profil d'un utilisateur."
+)
+async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User):
+    with open(data_file_path, 'r') as users_file:
+        users = json.load(users_file)
+
+    selected_user = next((s for s in users if str(s['user_id']) == str(user.id)), None)
+    if not selected_user:
+        await ctx.send(f"L'utilisateur {user} n'es pas trouver.")
+        return
+
+    name = selected_user.get("name")
+    last_name = selected_user.get("last_name")
+    birthdate = selected_user.get("birthdate")
+    job = selected_user.get("job")
+
+    if job is None:
+        job = "N'a pas de travail."
+
+    embed = disnake.Embed(
+        title=f"Profil de: {name} aka {user}",
+        description=f"**Prenom**: {name}\n"
+                    f"**Nom**: {last_name}\n"
+                    f"**Date de naissance**: {birthdate}\n"
+                    f"**Travail**: {job}\n",
+        color=disnake.Color.blue()
+    )
+
+    await ctx.send(embed=embed)
+
+
 bot.loop.create_task(status_loop())
 bot.run(token)
