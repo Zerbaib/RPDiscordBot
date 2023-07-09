@@ -70,7 +70,7 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
 
     existing_user = next((s for s in users if str(s['user_id']).lower() == str(author).lower()), None)
     if existing_user:
-        await ctx.send("Users already in the database.", delete_after=del_time)
+        await ctx.send("Tu a deja crée ton profil.", delete_after=del_time)
         return
 
     try:
@@ -78,7 +78,7 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
         if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2100):
             raise ValueError
     except (ValueError, AttributeError):
-        await ctx.send("Invalid birthdate format. Please use the format: dd/mm/yyyy.", delete_after=del_time)
+        await ctx.send("Le format de la date est invalide utilise: ``dd/mm/yyyy``.", delete_after=del_time)
         return
     
     new_user = {
@@ -92,26 +92,26 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
     save_users(users)
 
     embed = disnake.Embed(
-        title="Your profile as been created !",
-        description=f"With option:\n"
-                    f"**Name**: ``{prenom}``\n"
-                    f"**Last Name**: ``{nom}``\n"
-                    f"**Birthdate**: ``{naissance}``\n",
+        title="Ton profil a bien ete crée !",
+        description=f"Avec les option:\n"
+                    f"**Prénom**: ``{prenom}``\n"
+                    f"**Nom**: ``{nom}``\n"
+                    f"**Date de naissance**: ``{naissance}``\n",
         color=disnake.Color.dark_green()
     )
-    embed.set_footer(text=f"Executed at {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
+    embed.set_footer(text=f"Executer a {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
     
     await ctx.send(embed=embed)
     embed = disnake.Embed(
-        title="A profile as been created !",
-        description=f"Option of account:\n"
-                    f"**Name**: ``{prenom}``\n"
-                    f"**Last Name**: ``{nom}``\n"
-                    f"**Birthdate**: ``{naissance}``\n"
-                    f"**Job**: ``Null``",
+        title="Un profil a bien ete crée !",
+        description=f"Option du compte:\n"
+                    f"**Prénom**: ``{prenom}``\n"
+                    f"**Nom**: ``{nom}``\n"
+                    f"**Date de naissance**: ``{naissance}``\n"
+                    f"**Travail**: ``Null``",
         color=disnake.Color.dark_green()
     )
-    embed.set_footer(text=f"Created at {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
+    embed.set_footer(text=f"Crée a {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
     await channel.send(embed=embed)
     save_users(users)
 
