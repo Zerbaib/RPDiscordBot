@@ -56,5 +56,42 @@ async def status_loop():
 
         await asyncio.sleep(sec_loop)
 
+@bot.slash_command(
+    name="add",
+    description="Add a server to the database"
+)
+async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last_name: str, birthdate: str):
+    author = await ctx.author.id
+
+    with open(data_file_path, 'r') as users_file:
+        users = json.load(users_file)
+
+    existing_user = next((s for s in users if s['user_id'].lower() == author.lower()), None)
+    if existing_user:
+        await ctx.send("Server already exists in the database.")
+        return
+
+    # Ajouter le nouveau serveur à la base de données
+    new_user = {
+        "user_id": author,
+        "name": name,
+        "last_name": last_name,
+        "birthdate": birthdate,
+        "job": None
+    }
+    users.append(new_user)
+    save_users(user)
+
+    embed = disnake.Embed(
+        title="Server add in config", 
+        description=f"Server as bin added:\n\n"
+                    f"**NAME**: {name}\n"
+                    f"**IP**: {ip}\n",
+        colour=disnake.Color.dark_green()
+        )
+    await ctx.author.send(embed=embed)
+    await ctx.log_chan.send("done", delete_after=del_time)
+    save_users(user)
+
 bot.loop.create_task(status_loop())
 bot.run(token)
