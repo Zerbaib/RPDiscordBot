@@ -119,13 +119,22 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
     name="whois",
     description="Regarde le profil d'un utilisateur."
 )
-async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User):
+async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User = None):
+    if user is None:
+        user = ctx.author
+
     with open(data_file_path, 'r') as users_file:
         users = json.load(users_file)
 
     selected_user = next((s for s in users if str(s['user_id']) == str(user.id)), None)
     if not selected_user:
-        await ctx.send(f"L'utilisateur {user} n'es pas trouver.")
+        embed = disnake.Embed(
+        title=f"Le profil de {user} n'a pas ete trouver",
+        description=f"**{user} dois executer la commande ``/cree``**\n"
+                    f"**Pour crée sont profil**",
+        color=disnake.Color.blue()
+        )
+        await ctx.send(embed=embed)
         return
 
     name = selected_user.get("name")
@@ -138,7 +147,7 @@ async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User):
 
     embed = disnake.Embed(
         title=f"Profil de: {name} aka {user}",
-        description=f"**Prenom**: {name}\n"
+        description=f"**Prénom**: {name}\n"
                     f"**Nom**: {last_name}\n"
                     f"**Date de naissance**: {birthdate}\n"
                     f"**Travail**: {job}\n",
