@@ -3,6 +3,7 @@ from disnake.ext import commands
 import os
 import json
 import asyncio
+from datetime import datetime
 
 data_file_path = 'users.json'
 config_file_path = 'config.json'
@@ -57,10 +58,10 @@ async def status_loop():
         await asyncio.sleep(sec_loop)
 
 @bot.slash_command(
-    name="add",
-    description="Add a server to the database"
+    name="cree",
+    description="Crée ton profil RP."
 )
-async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last_name: str, birthdate: str):
+async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str, naissance: str):
     author = ctx.author.id
     channel = await bot.fetch_channel(log_chan)
 
@@ -73,7 +74,7 @@ async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last
         return
 
     try:
-        day, month, year = map(int, birthdate.split('/'))
+        day, month, year = map(int, naissance.split('/'))
         if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2100):
             raise ValueError
     except (ValueError, AttributeError):
@@ -82,22 +83,35 @@ async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last
     
     new_user = {
         "user_id": author,
-        "name": name,
-        "last_name": last_name,
-        "birthdate": birthdate,
+        "name": prenom,
+        "last_name": nom,
+        "birthdate": naissance,
         "job": None
     }
     users.append(new_user)
     save_users(users)
 
     embed = disnake.Embed(
-        title="Server add in config",
-        description=f"Server has been added:\n\n"
-                    f"**Name**: {name}\n"
-                    f"**Last Name**: {last_name}\n"
-                    f"**Birthdate**: {birthdate}\n",
+        title="Your profile as been created !",
+        description=f"With option:\n"
+                    f"**Name**: ``{prenom}``\n"
+                    f"**Last Name**: ``{nom}``\n"
+                    f"**Birthdate**: ``{naissance}``\n",
         color=disnake.Color.dark_green()
     )
+    embed.set_footer(text=f"Executed at {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
+    
+    await ctx.send(embed=embed)
+    embed = disnake.Embed(
+        title="A profile as been created !",
+        description=f"Option of account:\n"
+                    f"**Name**: ``{prenom}``\n"
+                    f"**Last Name**: ``{nom}``\n"
+                    f"**Birthdate**: ``{naissance}``\n"
+                    f"**Job**: ``Null``",
+        color=disnake.Color.dark_green()
+    )
+    embed.set_footer(text=f"Created at {datetime.now().strftime('%H:%M:%S %Y-%m-%d')}")
     await channel.send(embed=embed)
     save_users(users)
 
