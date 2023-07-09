@@ -67,7 +67,7 @@ async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last
     with open(data_file_path, 'r') as users_file:
         users = json.load(users_file)
 
-    existing_user = next((s for s in users if s['user_id'].lower() == str(author).lower()), None)
+    existing_user = next((s for s in users if str(s['user_id']).lower() == str(author).lower()), None)
     if existing_user:
         await ctx.send("Users already in the database.", delete_after=del_time)
         return
