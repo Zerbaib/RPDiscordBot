@@ -192,7 +192,7 @@ async def add_job(ctx: disnake.ApplicationCommandInteraction, job: str, user: di
     embed = disnake.Embed(
         title=f"Un travail a ete ajouter",
         description=f"Le travail de {user} a été mis à jour.\n"
-                    f"**Nouveau travail**: {job}",
+                    f"**Nouveau travail**: ``{job}``",
         color=disnake.Color.dark_green()
     )
     await channel.send(embed=embed)
