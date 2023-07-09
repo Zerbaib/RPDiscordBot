@@ -103,7 +103,7 @@ async def cree(ctx: disnake.ApplicationCommandInteraction, prenom: str, nom: str
     
     await ctx.send(embed=embed)
     embed = disnake.Embed(
-        title="Un profil a bien ete crée !",
+        title="Un profil a ete crée !",
         description=f"Option du compte:\n"
                     f"**Prénom**: ``{prenom}``\n"
                     f"**Nom**: ``{nom}``\n"
@@ -157,6 +157,45 @@ async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User =
 
     await ctx.send(embed=embed)
 
+@bot.slash_command(
+    name="addjob",
+    description="Ajoute le travail de quelqu'un"
+)
+@commands.has_permissions(administrator=True)
+async def add_job(ctx: disnake.ApplicationCommandInteraction, job: str, user: disnake.User = None):
+    channel = await bot.fetch_channel(log_chan)
+    if user is None:
+        user = ctx.author
+    with open(data_file_path, 'r') as users_file:
+        users = json.load(users_file)
+
+    selected_user = next((s for s in users if str(s['user_id']) == str(user.id)), None)
+    if not selected_user:
+        embed = disnake.Embed(
+            title=f"Utilisateur introuvable",
+            description=f"L'utilisateur {user} n'a pas été trouvé.",
+            color=disnake.Color.dark_red()
+        )
+        await ctx.send(embed=embed)
+        return
+
+    selected_user['job'] = job
+    save_users(users)
+
+    embed = disnake.Embed(
+        title=f"Travail ajouté avec succès",
+        description=f"Le travail de {user} a été mis à jour.\n"
+                    f"**Nouveau travail**: {job}",
+        color=disnake.Color.dark_green()
+    )
+    await ctx.send(embed=embed)
+    embed = disnake.Embed(
+        title=f"Un travail a ete ajouter",
+        description=f"Le travail de {user} a été mis à jour.\n"
+                    f"**Nouveau travail**: {job}",
+        color=disnake.Color.dark_green()
+    )
+    await channel.send(embed=embed)
 
 bot.loop.create_task(status_loop())
 bot.run(token)
