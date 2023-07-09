@@ -38,9 +38,9 @@ async def on_ready():
     await status_loop()
     print(f'Logged in as {bot.user.name}')
 
-def save_users(user):
+def save_users(users):
     with open(data_file_path, 'w') as users_file:
-        json.dump(user, users_file, indent=4, ensure_ascii=False)
+        json.dump(users, users_file, indent=4, ensure_ascii=False)
 
 async def status_loop():
     while not bot.is_closed():
@@ -61,17 +61,25 @@ async def status_loop():
     description="Add a server to the database"
 )
 async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last_name: str, birthdate: str):
-    author = await ctx.author.id
+    author = ctx.author.id
+    channel = await bot.fetch_channel(log_chan)
 
     with open(data_file_path, 'r') as users_file:
         users = json.load(users_file)
 
-    existing_user = next((s for s in users if s['user_id'].lower() == author.lower()), None)
+    existing_user = next((s for s in users if s['user_id'].lower() == str(author).lower()), None)
     if existing_user:
-        await ctx.send("Server already exists in the database.")
+        await ctx.send("Users already in the database.", delete_after=del_time)
         return
 
-    # Ajouter le nouveau serveur à la base de données
+    try:
+        day, month, year = map(int, birthdate.split('/'))
+        if not (1 <= day <= 31 and 1 <= month <= 12 and 1900 <= year <= 2100):
+            raise ValueError
+    except (ValueError, AttributeError):
+        await ctx.send("Invalid birthdate format. Please use the format: dd/mm/yyyy.", delete_after=del_time)
+        return
+    
     new_user = {
         "user_id": author,
         "name": name,
@@ -80,18 +88,18 @@ async def add_server(ctx: disnake.ApplicationCommandInteraction, name: str, last
         "job": None
     }
     users.append(new_user)
-    save_users(user)
+    save_users(users)
 
     embed = disnake.Embed(
-        title="Server add in config", 
-        description=f"Server as bin added:\n\n"
-                    f"**NAME**: {name}\n"
-                    f"**IP**: {ip}\n",
-        colour=disnake.Color.dark_green()
-        )
-    await ctx.author.send(embed=embed)
-    await ctx.log_chan.send("done", delete_after=del_time)
-    save_users(user)
+        title="Server add in config",
+        description=f"Server has been added:\n\n"
+                    f"**Name**: {name}\n"
+                    f"**Last Name**: {last_name}\n"
+                    f"**Birthdate**: {birthdate}\n",
+        color=disnake.Color.dark_green()
+    )
+    await channel.send(embed=embed)
+    save_users(users)
 
 bot.loop.create_task(status_loop())
 bot.run(token)
