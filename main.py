@@ -129,9 +129,10 @@ async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User =
     selected_user = next((s for s in users if str(s['user_id']) == str(user.id)), None)
     if not selected_user:
         embed = disnake.Embed(
-        title=f"Le profil de {user} n'a pas ete trouver",
-        description=f"**{user} dois executer la commande ``/cree``**\n"
-                    f"**Pour crée sont profil**",
+        title=f"Le profil de {user.display_name} n'a pas ete trouver",
+        description=f"**{user.display_name}** dois executer\n"
+                    f"la commande **``/cree``**\n"
+                    f"Pour crée sont profil",
         color=disnake.Color.blue()
         )
         await ctx.send(embed=embed)
@@ -146,7 +147,7 @@ async def whois(ctx: disnake.ApplicationCommandInteraction, user: disnake.User =
         job = "N'a pas de travail."
 
     embed = disnake.Embed(
-        title=f"Profil de: {name} aka {user}",
+        title=f"Profil de: {name} aka ``{user.display_name}``",
         description=f"**Prénom**: {name}\n"
                     f"**Nom**: {last_name}\n"
                     f"**Date de naissance**: {birthdate}\n"
