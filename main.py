@@ -224,7 +224,7 @@ async def delete_profile(ctx: disnake.ApplicationCommandInteraction, user: disna
     embed = disnake.Embed(
         title=f"Profil supprimé avec succès",
         description=f"Le profil de {user} a été supprimé.",
-        color=disnake.Color.dark_green()
+        color=disnake.Color.dark_red()
     )
     await ctx.send(embed=embed)
 
